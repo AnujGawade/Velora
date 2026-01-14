@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { sortOptions } from '@/config';
+import { addToCart, getCartItems } from '@/store/shop/cart-slice';
 import {
   fetchAllFilteredProducts,
   fetchProductDetails,
@@ -24,6 +25,8 @@ const ShopListing = () => {
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
+  const { user } = useSelector((state) => state.auth);
+  console.log(user.id);
   const [sort, setSort] = useState(null);
   const [filters, setFilters] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
@@ -74,7 +77,20 @@ const ShopListing = () => {
     dispatch(fetchProductDetails(getCurrentProductId));
   };
 
-  console.log(productDetails);
+  const handleAddToCart = (getCurrentProductId) => {
+    console.log(getCurrentProductId);
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(getCartItems(user?.id));
+      }
+    });
+  };
 
   useEffect(() => {
     setSort('price-lowtohigh');
@@ -143,6 +159,7 @@ const ShopListing = () => {
                   key={productItem._id}
                   product={productItem}
                   handleGetProductDetails={handleGetProductDetails}
+                  handleAddToCart={handleAddToCart}
                 />
               ))
             : null}
