@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
-import bannerOne from '../../assets/home-1.jpeg';
-import bannerTwo from '../../assets/home-2.jpg';
-import bannerThree from '../../assets/home-3.jpeg';
+import bannerOne from '../../assets/Hero_image_1.png';
+import bannerTwo from '../../assets/Hero_image_2.png';
 import {
   Award,
   Baby,
@@ -46,7 +45,7 @@ const ShopHome = () => {
 
   const navigate = useNavigate();
   const { productList } = useSelector((state) => state.shopProducts);
-  const slides = [bannerOne, bannerTwo, bannerThree];
+  const slides = [bannerOne, bannerTwo];
 
   const handleNavigateToListingPage = (item, section) => {
     sessionStorage.removeItem('filters');
@@ -78,14 +77,14 @@ const ShopHome = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Slider */}
-      <div className="relative w-full h-[600px] overflow-hidden">
+      <div className="relative w-full h-[800px] overflow-hidden">
         {slides.map((slide, index) => (
           <img
             key={index}
             src={slide}
             className={`${
               index === currentSlide ? 'opacity-100' : 'opacity-0'
-            } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+            } absolute top-0 left-0 w-full h-full object-fit transition-opacity duration-1000`}
           />
         ))}
 
