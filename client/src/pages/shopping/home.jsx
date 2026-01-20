@@ -79,36 +79,42 @@ const ShopHome = () => {
       {/* Slider */}
       <div className="relative w-full h-[800px] overflow-hidden">
         {slides.map((slide, index) => (
-          <img
+          <div
             key={index}
-            src={slide}
-            className={`${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            } absolute top-0 left-0 w-full h-full object-fit transition-opacity duration-1000`}
-          />
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
+          >
+            {/* Image */}
+            <img
+              src={slide}
+              alt="Hero banner"
+              className="w-full h-full object-cover"
+            />
+
+            {/* Dark Overlay (optional but recommended) */}
+            <div className="absolute inset-0 bg-black/30"></div>
+
+            {/* Text Content */}
+            <div className="absolute inset-0 flex items-center justify-end">
+              <div className="text-center text-white px-4">
+                <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                  New Season Collection
+                </h1>
+                <p className="text-lg md:text-xl mb-6">
+                  Discover styles made for every moment
+                </p>
+
+                <Button
+                  size="lg"
+                  className="bg-white text-black hover:bg-gray-200"
+                >
+                  Shop Now
+                </Button>
+              </div>
+            </div>
+          </div>
         ))}
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>
-            setCurrentSlide(
-              (prev) => (prev - 1 + slides.length) % slides.length,
-            )
-          }
-          className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/80"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-          className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/80"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </Button>
       </div>
 
       {/* Categories */}
