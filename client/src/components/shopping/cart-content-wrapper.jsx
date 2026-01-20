@@ -20,6 +20,7 @@ const UserCartItemsContent = ({ cartItems }) => {
 
       toast.success('Item removed from cart');
     } catch (error) {
+      console.log(error);
       toast.error('Failed to remove item');
     }
   };
@@ -42,6 +43,7 @@ const UserCartItemsContent = ({ cartItems }) => {
 
       toast.success('Cart item updated');
     } catch (error) {
+      console.log(error);
       toast.error('Failed to update cart');
     }
   };
