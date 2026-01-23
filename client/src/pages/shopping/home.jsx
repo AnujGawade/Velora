@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import bannerOne from '../../assets/Hero_image_1.png';
 import bannerTwo from '../../assets/Hero_image_2.png';
 import {
+  ArrowRight,
   Award,
   Baby,
   BadgeCheck,
@@ -18,9 +19,15 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllFilteredProducts } from '@/store/shop/products-slice';
+import {
+  fetchAllFilteredProducts,
+  fetchProductDetails,
+} from '@/store/shop/products-slice';
 import ShopProductTile from '@/components/shopping/product-tile';
 import { useNavigate } from 'react-router-dom';
+import { addToCart, getCartItems } from '@/store/shop/cart-slice';
+import { toast } from 'sonner';
+import ProductDetails from '@/components/shopping/product-details';
 
 const categories = [
   { id: 'men', label: 'Men', icon: Shirt },
@@ -44,8 +51,14 @@ const ShopHome = () => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-  const { productList } = useSelector((state) => state.shopProducts);
+
+  const { user } = useSelector((state) => state.auth);
+
+  const { productList, productDetails } = useSelector(
+    (state) => state.shopProducts,
+  );
   const slides = [bannerOne, bannerTwo];
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   const handleNavigateToListingPage = (item, section) => {
     sessionStorage.removeItem('filters');
@@ -55,6 +68,26 @@ const ShopHome = () => {
 
     sessionStorage.setItem('filters', JSON.stringify(currentFilter));
     navigate(`/shop/listing`);
+  };
+
+  const handleGetProductDetails = (getCurrentProductId) => {
+    dispatch(fetchProductDetails(getCurrentProductId));
+  };
+
+  const handleAddToCart = (getCurrentProductId) => {
+    console.log(getCurrentProductId);
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      }),
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(getCartItems(user?.id));
+        toast('Product added to the cart Successfully');
+      }
+    });
   };
 
   useEffect(() => {
@@ -73,6 +106,12 @@ const ShopHome = () => {
 
     return () => clearInterval(timer);
   }, [slides.length]);
+
+  useEffect(() => {
+    if (productDetails) {
+      setOpenDetailsDialog(true);
+    }
+  }, [productDetails]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -96,7 +135,7 @@ const ShopHome = () => {
             <div className="absolute inset-0 bg-black/30"></div>
 
             {/* Text Content */}
-            <div className="absolute inset-0 flex items-center justify-end">
+            <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center text-white px-4">
                 <h1 className="text-4xl md:text-6xl font-bold mb-4">
                   New Season Collection
@@ -107,9 +146,10 @@ const ShopHome = () => {
 
                 <Button
                   size="lg"
-                  className="bg-white text-black hover:bg-gray-200"
+                  className="bg-black text-white hover:bg-gray-200 hover:text-black cursor-pointer"
                 >
                   Shop Now
+                  <ArrowRight />
                 </Button>
               </div>
             </div>
@@ -157,6 +197,7 @@ const ShopHome = () => {
                 <Card
                   key={item.id}
                   className="cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => handleNavigateToListingPage(item, 'brand')}
                 >
                   <CardContent className="flex flex-col items-center justify-center p-6">
                     <Icon className="w-12 h-12 mb-4 text-primary" />
@@ -178,12 +219,22 @@ const ShopHome = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList && productList.length > 0
               ? productList.map((item) => (
-                  <ShopProductTile key={item._id} product={item} />
+                  <ShopProductTile
+                    key={item._id}
+                    handleGetProductDetails={handleGetProductDetails}
+                    handleAddToCart={handleAddToCart}
+                    product={item}
+                  />
                 ))
               : null}
           </div>
         </div>
       </section>
+      <ProductDetails
+        setOpen={setOpenDetailsDialog}
+        open={openDetailsDialog}
+        productDetails={productDetails}
+      />
     </div>
   );
 };

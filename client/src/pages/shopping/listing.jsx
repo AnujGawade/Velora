@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 const ShopListing = () => {
   const dispatch = useDispatch();
   const { productList, productDetails } = useSelector(
-    (state) => state.shopProducts
+    (state) => state.shopProducts,
   );
   const { user } = useSelector((state) => state.auth);
   const [sort, setSort] = useState(null);
@@ -84,7 +84,7 @@ const ShopListing = () => {
         userId: user?.id,
         productId: getCurrentProductId,
         quantity: 1,
-      })
+      }),
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(getCartItems(user?.id));
@@ -108,7 +108,7 @@ const ShopListing = () => {
   useEffect(() => {
     if (filters !== null && sort !== null)
       dispatch(
-        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort }),
       );
   }, [dispatch, sort, filters]);
 
