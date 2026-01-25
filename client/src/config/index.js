@@ -146,8 +146,6 @@ export const brandOptionsMap = {
   'h&m': 'H&M',
 };
 
-export const cagtegoryOptionsMap = [];
-
 export const filterOptions = {
   category: [
     { id: 'men', label: 'Men' },
@@ -183,5 +181,43 @@ export const sortOptions = [
   {
     id: 'price-ztoa',
     label: 'Price: Z to A',
+  },
+];
+
+export const addressFormControls = [
+  {
+    label: 'Address',
+    name: 'address',
+    componentType: 'input',
+    type: 'text',
+    placeholder: 'Enter product address',
+  },
+  {
+    label: 'City',
+    name: 'city',
+    componentType: 'input',
+    type: 'text',
+    placeholder: 'Enter your city',
+  },
+  {
+    label: 'Pincode',
+    name: 'pincode',
+    componentType: 'input',
+    type: 'text',
+    placeholder: 'Enter your Pincode',
+  },
+  {
+    label: 'Phone',
+    name: 'phone',
+    componentType: 'input',
+    type: 'text',
+    placeholder: 'Enter your phone number',
+  },
+  {
+    label: 'Notes',
+    name: 'notes',
+    componentType: 'input',
+    type: 'text',
+    placeholder: 'Enter any additional Notes',
   },
 ];
