@@ -10,10 +10,10 @@ import {
 } from '../ui/table';
 import { Button } from '../ui/button';
 
-const ShopOrders = () => {
+const AdminOrdersView = () => {
   return (
     <Card>
-      <CardHeader>Order History</CardHeader>
+      <CardHeader>All Orders</CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
@@ -44,4 +44,4 @@ const ShopOrders = () => {
   );
 };
 
-export default ShopOrders;
+export default AdminOrdersView;

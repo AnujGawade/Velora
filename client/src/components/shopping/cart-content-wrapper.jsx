@@ -15,7 +15,7 @@ const UserCartItemsContent = ({ cartItems }) => {
         deleteCartItem({
           userId: user?.id,
           productId: item?.productId,
-        })
+        }),
       ).unwrap();
 
       toast.success('Item removed from cart');
@@ -38,7 +38,7 @@ const UserCartItemsContent = ({ cartItems }) => {
           userId: user?.id,
           productId: item?.productId,
           quantity: updatedQuantity,
-        })
+        }),
       ).unwrap();
 
       toast.success('Cart item updated');
@@ -65,7 +65,7 @@ const UserCartItemsContent = ({ cartItems }) => {
             size="icon"
             className="h-8 w-8 rounded-full"
             onClick={() => handleUpdateQuantity(cartItems, 'minus')}
-            disabled={cartItems.quantity === 1}
+            disabled={cartItems?.quantity === 1}
           >
             <Minus className="w-4 h-4" />
           </Button>
