@@ -15,6 +15,8 @@ import AdminOrderDetails from './orders-details';
 const AdminOrdersView = () => {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
+  console.log(openDetailsDialog);
+
   return (
     <Card>
       <CardHeader>All Orders</CardHeader>

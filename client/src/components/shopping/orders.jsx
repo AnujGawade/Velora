@@ -43,8 +43,8 @@ const ShopOrders = () => {
                   onOpenChange={setOpenDetailsDailog}
                 >
                   <Button
-                    onClick={() => setOpenDetailsDailog(true)}
                     className="cursor-pointer"
+                    onClick={() => setOpenDetailsDailog(true)}
                   >
                     View Details
                   </Button>
