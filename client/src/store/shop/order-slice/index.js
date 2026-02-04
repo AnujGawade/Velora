@@ -25,6 +25,22 @@ export const createNewOrder = createAsyncThunk(
   },
 );
 
+export const capturePayment = createAsyncThunk(
+  '/order/createNewOrder',
+  async ({ paymentId, payerId, orderId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:4000/api/shop/order/capture',
+        { paymentId, payerId, orderId },
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to create order');
+    }
+  },
+);
+
 /* ---------------- SLICE ---------------- */
 
 const shopOrderSlice = createSlice({
@@ -41,6 +57,10 @@ const shopOrderSlice = createSlice({
         state.isLoading = false;
         state.approvalURL = action.payload.approvalURL;
         state.orderId = action.payload.orderId;
+        sessionStorage.setItem(
+          'currentOrderId',
+          JSON.stringify(action.payload.orderId),
+        );
       })
       .addCase(createNewOrder.rejected, (state) => {
         state.isLoading = false;

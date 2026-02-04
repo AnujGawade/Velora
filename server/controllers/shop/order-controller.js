@@ -1,5 +1,6 @@
 const paypal = require('../../helpers/paypal');
 const Order = require('../../models/Order');
+const Cart = require('../../models/Cart');
 
 const createOrder = async (req, res) => {
   try {
@@ -95,6 +96,32 @@ const createOrder = async (req, res) => {
 
 const capturePayment = async (req, res) => {
   try {
+    const { paymentId, orderId, payerId } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order Not Found',
+      });
+    }
+
+    order.paymentStatus = 'paid';
+    order.orderStatus = 'confirmed';
+    order.paymentId = paymentId;
+    order.payerId = payerId;
+
+    const getCartId = order.cartId;
+    await Cart.findByIdAndDelete(getCartId);
+
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Order Confirmed',
+      data: order,
+    });
   } catch (error) {
     console.log(error);
     res.json({

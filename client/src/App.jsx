@@ -19,18 +19,18 @@ import AuthProtected from './components/common/authProtected';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkAuth } from './store/auth-slice';
 import { Skeleton } from './components/ui/skeleton';
+import PaypalReturn from './pages/shopping/paypal-return';
+import PaymentSuccess from './pages/shopping/payment-success';
 
 const App = () => {
   const { isAuthenticated, user, isLoading } = useSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch]);
-
-
 
   if (isLoading) return <Skeleton className="h-[600px] w-full" />;
 
@@ -75,6 +75,8 @@ const App = () => {
           <Route path="listing" element={<ShopListing />} />
           <Route path="checkout" element={<ShopCheckout />} />
           <Route path="account" element={<ShopAccount />} />
+          <Route path="paypal-return" element={<PaypalReturn />} />
+          <Route path="payment-success" element={<PaymentSuccess />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
