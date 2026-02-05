@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader } from '../ui/card';
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
   Table,
   TableBody,
@@ -9,17 +10,53 @@ import {
   TableRow,
 } from '../ui/table';
 import { Button } from '../ui/button';
-import { Dialog } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader } from '../ui/dialog';
+import { Badge } from '../ui/badge';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getAllOrders,
+  getOrderDetails,
+  resetOrderDetails,
+} from '@/store/admin/order-slice';
 import AdminOrderDetails from './orders-details';
+import { DialogTitle } from '@radix-ui/react-dialog';
 
 const AdminOrdersView = () => {
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const dispatch = useDispatch();
+  const { orderList, orderDetails } = useSelector((state) => state.adminOrders);
 
-  console.log(openDetailsDialog);
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+  // Fetch all orders
+  useEffect(() => {
+    dispatch(getAllOrders());
+  }, [dispatch]);
+
+  // Open dialog when order details arrive
+  useEffect(() => {
+    if (orderDetails) {
+      setOpenDetailsDialog(true);
+    }
+  }, [orderDetails]);
+
+  const handleViewDetails = (orderId) => {
+    setSelectedOrderId(orderId);
+    dispatch(getOrderDetails({ id: orderId }));
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDetailsDialog(false);
+    setSelectedOrderId(null);
+    dispatch(resetOrderDetails());
+  };
 
   return (
     <Card>
-      <CardHeader>All Orders</CardHeader>
+      <CardHeader>
+        <CardTitle>All Orders</CardTitle>
+      </CardHeader>
+
       <CardContent>
         <Table>
           <TableHeader>
@@ -28,34 +65,55 @@ const AdminOrdersView = () => {
               <TableHead>Order Date</TableHead>
               <TableHead>Order Status</TableHead>
               <TableHead>Order Price</TableHead>
-              <TableHead>
-                <span className="sr-only">Details</span>
-              </TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
+
           <TableBody>
-            <TableRow>
-              <TableCell>123456</TableCell>
-              <TableCell>28/01/26</TableCell>
-              <TableCell>Shipped</TableCell>
-              <TableCell>$230</TableCell>
-              <TableCell>
-                <Dialog
-                  open={openDetailsDialog}
-                  onOpenChange={setOpenDetailsDialog}
-                >
-                  <Button
-                    onClick={() => setOpenDetailsDialog(true)}
-                    className="cursor-pointer"
-                  >
-                    View Details
-                  </Button>
-                  <AdminOrderDetails />
-                </Dialog>
-              </TableCell>
-            </TableRow>
+            {orderList?.length > 0 &&
+              orderList.map((order) => (
+                <TableRow key={order._id}>
+                  <TableCell>{order._id}</TableCell>
+                  <TableCell>{order.orderDate?.split('T')[0]}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className={`py-1 px-3 ${
+                        order.orderStatus === 'confirmed'
+                          ? 'bg-green-500'
+                          : order.orderStatus === 'rejected'
+                            ? 'bg-red-600'
+                            : 'bg-black'
+                      }`}
+                    >
+                      {order.orderStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>${order.totalAmount}</TableCell>
+                  <TableCell>
+                    <Button onClick={() => handleViewDetails(order._id)}>
+                      View Details
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
+
+        {/* ✅ SINGLE DIALOG */}
+        <Dialog
+          open={openDetailsDialog}
+          onOpenChange={(open) => {
+            if (!open) handleCloseDialog();
+          }}
+        >
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Order Details</DialogTitle>
+            </DialogHeader>
+
+            <AdminOrderDetails orderDetails={orderDetails} />
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );

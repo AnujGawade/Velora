@@ -1,55 +1,84 @@
-import React from 'react';
+import { useSelector } from 'react-redux';
+import { Badge } from '../ui/badge';
+import { DialogContent } from '../ui/dialog';
 import { Label } from '../ui/label';
 import { Separator } from '../ui/separator';
-import { DialogContent } from '../ui/dialog';
 
-const ShopOrdersDetails = () => {
-  <DialogContent className="sm:max-w-[600px]">
+function ShopOrderDetails({ orderDetails }) {
+  const { user } = useSelector((state) => state.auth);
+
+  return (
     <div className="grid gap-6">
       <div className="grid gap-2">
         <div className="flex mt-6 items-center justify-between">
           <p className="font-medium">Order ID</p>
-          <Label>123456</Label>
+          <Label>{orderDetails?._id}</Label>
         </div>
+
         <div className="flex mt-2 items-center justify-between">
           <p className="font-medium">Order Date</p>
-          <Label>29/01/2026</Label>
+          <Label>{orderDetails?.orderDate?.split('T')[0]}</Label>
         </div>
-        <div className="flex mt-2 items-center justify-between">
-          <p className="font-medium">Order Status</p>
-          <Label>Shipped</Label>
-        </div>
+
         <div className="flex mt-2 items-center justify-between">
           <p className="font-medium">Order Price</p>
-          <Label>In Process</Label>
+          <Label>${orderDetails?.totalAmount}</Label>
+        </div>
+
+        <div className="flex mt-2 items-center justify-between">
+          <p className="font-medium">Payment Method</p>
+          <Label>{orderDetails?.paymentMethod}</Label>
+        </div>
+
+        <div className="flex mt-2 items-center justify-between">
+          <p className="font-medium">Payment Status</p>
+          <Label>{orderDetails?.paymentStatus}</Label>
+        </div>
+
+        <div className="flex mt-2 items-center justify-between">
+          <p className="font-medium">Order Status</p>
+          <Badge
+            className={`py-1 px-3 ${
+              orderDetails?.orderStatus === 'confirmed'
+                ? 'bg-green-500'
+                : orderDetails?.orderStatus === 'rejected'
+                  ? 'bg-red-600'
+                  : 'bg-black'
+            }`}
+          >
+            {orderDetails?.orderStatus}
+          </Badge>
         </div>
       </div>
+
       <Separator />
-      <div className="grid gap-4">
-        <div className="grid gap-2">
-          <div className="font-medium">Order Details</div>
-          <ul className="grid gap-3">
-            <li className="flex items-center justify-between">
-              <span>Product One</span>
-              <span>$100</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div className="grid gap-4">
-        <div className="grid gap-2">
-          <div className="font-medium">Shipping Information</div>
-          <div className="grid gap-0.5 text-muted-foreground">
-            <span>John </span>
-            <span>Address </span>
-            <span>City </span>
-            <span>Pincode </span>
-            <span>Phone </span>
+
+      <div>
+        <p className="font-medium mb-2">Order Items</p>
+        {orderDetails?.cartItems?.map((item) => (
+          <div key={item.productId} className="flex justify-between">
+            <span>{item.title}</span>
+            <span>x{item.quantity}</span>
+            <span>${item.price}</span>
           </div>
+        ))}
+      </div>
+
+      <Separator />
+
+      <div>
+        <p className="font-medium mb-2">Shipping Info</p>
+        <div className="text-muted-foreground">
+          <div>{user?.userName}</div>
+          <div>{orderDetails?.addressInfo?.address}</div>
+          <div>{orderDetails?.addressInfo?.city}</div>
+          <div>{orderDetails?.addressInfo?.pincode}</div>
+          <div>{orderDetails?.addressInfo?.phone}</div>
+          <div>{orderDetails?.addressInfo?.notes}</div>
         </div>
       </div>
     </div>
-  </DialogContent>;
-};
+  );
+}
 
-export default ShopOrdersDetails;
+export default ShopOrderDetails;
