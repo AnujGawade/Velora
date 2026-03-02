@@ -4,19 +4,39 @@ import { Label } from '../ui/label';
 import { Separator } from '../ui/separator';
 import CommonForm from '../common/form';
 import { Badge } from '../ui/badge';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getAllOrders,
+  getOrderDetails,
+  updateOrderStatus,
+} from '@/store/admin/order-slice';
+import { toast } from 'sonner';
 
 const initialFormData = {
   status: '',
 };
 
-const AdminOrderDetails = ({ orderDetails }) => {
+const AdminOrderDetails = ({ orderDetails, handleCloseDialog }) => {
   const [formData, setFormData] = useState(initialFormData);
 
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   const handleUpdateStatus = (event) => {
     event.preventDefault();
+    const { status } = formData;
+
+    dispatch(
+      updateOrderStatus({ id: orderDetails?._id, orderStatus: status }),
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(getOrderDetails(orderDetails?._id));
+        dispatch(getAllOrders());
+        handleCloseDialog();
+        setFormData(initialFormData);
+        toast.success(data.payload.message);
+      }
+    });
   };
 
   return (

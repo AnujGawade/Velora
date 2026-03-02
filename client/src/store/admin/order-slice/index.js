@@ -35,6 +35,24 @@ export const getOrderDetails = createAsyncThunk(
   },
 );
 
+export const updateOrderStatus = createAsyncThunk(
+  '/order/updateOrderStatus',
+  async ({ id, orderStatus }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/api/admin/orders/status/${id}`,
+        {
+          orderStatus,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to create order');
+    }
+  },
+);
+
 const adminOrderSlice = createSlice({
   name: 'adminOrderSlice',
   initialState,

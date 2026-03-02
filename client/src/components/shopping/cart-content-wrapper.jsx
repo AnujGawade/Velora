@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 const UserCartItemsContent = ({ cartItems }) => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
+  
   const handleCartItemDelete = async (item) => {
     try {
       await dispatch(

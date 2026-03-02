@@ -111,7 +111,10 @@ const AdminOrdersView = () => {
               <DialogTitle>Order Details</DialogTitle>
             </DialogHeader>
 
-            <AdminOrderDetails orderDetails={orderDetails} />
+            <AdminOrderDetails
+              orderDetails={orderDetails}
+              handleCloseDialog={handleCloseDialog}
+            />
           </DialogContent>
         </Dialog>
       </CardContent>

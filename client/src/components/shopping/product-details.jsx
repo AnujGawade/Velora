@@ -14,11 +14,32 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [isAdding, setIsAdding] = useState(false);
+  const { cartItems } = useSelector((state) => state.shopCart);
 
   const handleAddToCart = async () => {
     if (!user) {
       toast.error('Please login to add items to cart');
       return;
+    }
+
+    let getCartItems = cartItems?.items || [];
+
+    const getCurrentProductId = productDetails?._id;
+    const getTotalStock = productDetails?.totalStock;
+
+    if (getCartItems.length) {
+      const indexOfCurrentItem = getCartItems.findIndex(
+        (item) => item.productId === getCurrentProductId,
+      );
+
+      if (indexOfCurrentItem > -1) {
+        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+
+        if (getQuantity + 1 > getTotalStock) {
+          toast.error(`Only ${getTotalStock} items available`);
+          return;
+        }
+      }
     }
 
     try {
@@ -27,9 +48,9 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
       await dispatch(
         addToCart({
           userId: user.id,
-          productId: productDetails._id,
+          productId: getCurrentProductId,
           quantity: 1,
-        })
+        }),
       ).unwrap();
 
       toast.success('Product added to cart');
@@ -83,15 +104,21 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
             )}
           </div>
 
-          {/* Add to cart */}
           <div className="mt-5 mb-5">
-            <Button
-              onClick={handleAddToCart}
-              className="w-full"
-              disabled={isAdding}
-            >
-              {isAdding ? 'Adding...' : 'Add to Cart'}
-            </Button>
+            {/* Add to cart */}
+            {productDetails.totalStock === 0 ? (
+              <Button className="w-full opacity-60 cursor-not-allowed">
+                Out of Stock
+              </Button>
+            ) : (
+              <Button
+                onClick={handleAddToCart}
+                className="w-full"
+                disabled={isAdding}
+              >
+                {isAdding ? 'Adding...' : 'Add to Cart'}
+              </Button>
+            )}
           </div>
 
           <Separator />
